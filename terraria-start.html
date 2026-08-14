@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>キャラ作成〜最初の一歩ガイド — TERRARIA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@500;700;900&family=Noto+Sans+JP:wght@400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#E4E4DA; --paper-2:#DAD9CD; --ink:#1C1B19;
+    --pink:#FF3D82; --teal:#007A8A; --purple:#5B3E96;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0; background:var(--paper);
+    background-image: radial-gradient(circle at 1px 1px, rgba(28,27,25,0.07) 1px, transparent 0);
+    background-size:14px 14px;
+    color:var(--ink); font-family:'Noto Sans JP', sans-serif; -webkit-font-smoothing:antialiased;
+  }
+  .mono{ font-family:'JetBrains Mono', monospace; }
+  .display{ font-family:'Zen Kaku Gothic New', sans-serif; font-weight:900; }
+  a{ color:inherit; }
+  ::selection{ background:var(--pink); color:var(--paper); }
+
+  .misprint{ position:relative; display:inline-block; }
+  .misprint::before,.misprint::after{
+    content: attr(data-text); position:absolute; left:0; top:0; width:100%;
+    mix-blend-mode:multiply; z-index:-1;
+  }
+  .misprint::before{ color:var(--pink); transform:translate(3px,2px); }
+  .misprint::after{ color:var(--teal); transform:translate(-3px,-2px); }
+
+  .topbar{
+    position:sticky; top:0; z-index:50;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:10px 24px; background:var(--paper); border-bottom:2px solid var(--ink);
+  }
+  .topbar .brand{ font-size:13px; letter-spacing:.06em; }
+  .topbar nav{ display:flex; gap:16px; font-size:12px; }
+  .topbar nav a{ text-decoration:none; border-bottom:1px solid transparent; }
+  .topbar nav a:hover{ border-color:var(--ink); }
+  .topbar a.back{ font-size:12px; text-decoration:none; border-bottom:1px solid var(--ink); }
+
+  .hero{ padding:56px 24px 30px; text-align:center; }
+  .issue-tag{
+    display:inline-block; font-size:12px; letter-spacing:.1em; padding:4px 10px;
+    border:1px solid var(--ink); margin-bottom:18px; transform:rotate(-1.5deg); background:var(--paper);
+  }
+  .hero h1{ font-size:clamp(30px, 5.2vw, 48px); line-height:1.3; margin:0 auto; max-width:760px; }
+  .hero .lede{ max-width:580px; margin:18px auto 0; font-size:14px; line-height:2; color:rgba(28,27,25,.78); }
+
+  section{ padding:48px 24px; max-width:920px; margin:0 auto; }
+  .section-head{
+    display:flex; align-items:baseline; gap:14px; margin-bottom:26px;
+    border-bottom:2px solid var(--ink); padding-bottom:10px;
+  }
+  .section-head .no{ font-size:12px; }
+  .section-head h2{ font-size:22px; margin:0; }
+
+  /* ---------- setting cards ---------- */
+  .setting-group{ margin-bottom:34px; }
+  .setting-group:last-child{ margin-bottom:0; }
+  .setting-label{
+    display:inline-block; font-size:12px; letter-spacing:.08em; color:var(--purple);
+    margin-bottom:14px;
+  }
+  .option-grid{ display:grid; grid-template-columns:repeat(auto-fit, minmax(200px,1fr)); gap:14px; }
+  .option-card{
+    border:2px solid var(--ink); background:var(--paper-2); padding:16px;
+    position:relative;
+  }
+  .option-card.recommend{ border-color:var(--teal); }
+  .option-card.recommend::before{
+    content:"個人的イチオシ"; position:absolute; top:-12px; left:14px;
+    font-family:'JetBrains Mono', monospace; font-size:10px; letter-spacing:.04em;
+    background:var(--paper); color:var(--teal); border:1px solid var(--teal); padding:2px 8px;
+  }
+  .option-card h4{ font-size:15px; margin:6px 0 8px; }
+  .option-card p{ font-size:12.5px; line-height:1.8; margin:0; color:rgba(28,27,25,.82); }
+
+  .my-pick{
+    margin-top:16px; border:1px dashed var(--purple); background:var(--paper-2);
+    padding:14px 16px; font-size:13px; line-height:1.9; color:rgba(28,27,25,.85);
+  }
+  .my-pick b{ color:var(--purple); }
+
+  /* ---------- steps ---------- */
+  .steps{ counter-reset:step; }
+  .step{
+    display:grid; grid-template-columns:48px 1fr; gap:16px;
+    padding:18px 0; border-bottom:1px solid rgba(28,27,25,.16);
+  }
+  .step:last-child{ border-bottom:none; }
+  .step-num{ font-family:'JetBrains Mono', monospace; font-size:20px; color:var(--pink); }
+  .step-num::before{ counter-increment:step; content: counter(step); }
+  .step h4{ margin:0 0 6px; font-size:15px; }
+  .step p{ margin:0; font-size:13px; line-height:1.9; color:rgba(28,27,25,.85); }
+  .step .tip{
+    display:inline-block; margin-top:8px; font-size:11.5px; color:var(--teal);
+    border:1px solid var(--teal); padding:3px 8px;
+  }
+
+  .gear-highlight{
+    border:2px solid var(--teal); background:var(--paper-2); padding:22px 24px;
+  }
+  .gear-highlight .gear-tag{
+    display:inline-block; font-size:11px; letter-spacing:.06em; color:var(--teal);
+    border:1px solid var(--teal); padding:3px 9px; margin-bottom:12px;
+  }
+  .gear-highlight h3{ font-size:18px; margin:0 0 12px; }
+  .gear-highlight ol{ margin:0; padding-left:20px; }
+  .gear-highlight li{ font-size:13px; line-height:1.9; color:rgba(28,27,25,.85); margin-bottom:8px; }
+  .gear-highlight li:last-child{ margin-bottom:0; }
+  .gear-highlight .why{
+    margin-top:16px; font-size:12.5px; line-height:1.9; color:var(--purple);
+    border-top:1px dashed rgba(28,27,25,.25); padding-top:14px;
+  }
+
+  footer{ border-top:2px solid var(--ink); padding:30px 24px 44px; text-align:center; }
+  footer .colophon{ font-size:12px; letter-spacing:.05em; line-height:2; color:rgba(28,27,25,.7); }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand mono">AKISHO GAMES <span style="opacity:.5">/ TERRARIA</span></div>
+  <a class="back mono" href="terraria-guide.html">← 紹介ページに戻る</a>
+</div>
+
+<header class="hero">
+  <span class="issue-tag mono">はじめての人向け</span>
+  <h1 class="display">何から始めればいいか</h1>
+  <p class="lede">キャラ作成の難易度、ワールドの設定、最初に何をすればいいか——迷いがちなスタート地点を、個人的なおすすめ込みでまとめました。</p>
+</header>
+
+<section id="character">
+  <div class="section-head">
+    <span class="no mono">01</span>
+    <h2>キャラクター作成のおすすめ設定</h2>
+  </div>
+
+  <div class="setting-group">
+    <span class="setting-label mono">difficulty ― キャラクターの難易度</span>
+    <div class="option-grid">
+      <div class="option-card recommend">
+        <h4>クラシック</h4>
+        <p>死んでも装備やアイテムは基本的に失わない、標準の難易度。初めての1周目はまずこれで十分です。</p>
+      </div>
+      <div class="option-card">
+        <h4>メディアムコア</h4>
+        <p>死ぬとインベントリのアイテムをその場に落とす。緊張感は増しますが、初回にはやや不向きです。</p>
+      </div>
+      <div class="option-card">
+        <h4>ハードコア</h4>
+        <p>死んだら復活できず幽霊になる、いわゆる一発勝負モード。周回に慣れてから挑戦するのがおすすめです。</p>
+      </div>
+      <div class="option-card">
+        <h4>冒険(ジャーニー)</h4>
+        <p>アイテムの複製やスポーン数の調整など、自由度が非常に高いモード。自分のペースで気楽に遊びたい人向け。</p>
+      </div>
+    </div>
+    <div class="my-pick mono">
+      MY PICK → <b>クラシック</b>。まずは普通のバランスで遊んで、「建築やフィールド作りが面倒だな」と感じたら2周目以降で冒険モードに切り替えるのがちょうどいいです。<br>
+      ※ 本当に何も分からない、ゲームに慣れていない人は、最初から<b>冒険(ジャーニー)モード</b>を選んで、アイテムの複製や設定変更を使いながら「どんなアイテムがあるか」「どういうゲームなのか」を気軽に確認していくのもアリです。
+    </div>
+  </div>
+</section>
+
+<section id="world">
+  <div class="section-head">
+    <span class="no mono">02</span>
+    <h2>ワールド作成のおすすめ設定</h2>
+  </div>
+
+  <div class="setting-group">
+    <span class="setting-label mono">size ― ワールドサイズ</span>
+    <div class="option-grid">
+      <div class="option-card recommend">
+        <h4>小</h4>
+        <p>探索範囲が狭く、サクッと進めたい人向け。最初の1周目はまずここから始めるのがおすすめです。</p>
+      </div>
+      <div class="option-card">
+        <h4>中</h4>
+        <p>探索のしがいと迷わなさのバランスが良い、標準的なサイズ。操作や進め方に慣れてきたらこちらへ。</p>
+      </div>
+      <div class="option-card">
+        <h4>大</h4>
+        <p>とにかく広い。じっくり長く遊びたい人向けですが、初回だと目的地までが遠く感じることもあります。</p>
+      </div>
+    </div>
+    <div class="my-pick mono">
+      MY PICK → <b>小</b>。最初は「小」で操作や進め方をつかんで、慣れてきたら「中」に上げるのがちょうどいいです。
+    </div>
+  </div>
+
+  <div class="setting-group">
+    <span class="setting-label mono">world difficulty ― ワールドの難易度</span>
+    <div class="option-grid">
+      <div class="option-card recommend">
+        <h4>クラシック</h4>
+        <p>標準の難易度。まずはゲームの流れを覚えることに集中したい人向けです。</p>
+      </div>
+      <div class="option-card">
+        <h4>エキスパート以上</h4>
+        <p>敵が強くなる代わりに、ボスの専用ドロップアイテムが強力になります。操作に自信がある人は最初からこちらを選ぶのもアリです。</p>
+      </div>
+    </div>
+    <div class="my-pick mono">
+      MY PICK → <b>クラシック</b>でOKですが、エキスパート以上はボスの専用ドロップが強いので、アクションゲームの操作に自信がある人は最初からエキスパート以上を選んだ方が装備面で得することも多いです。
+    </div>
+  </div>
+
+  <div class="setting-group">
+    <span class="setting-label mono">evil biome ― 邪悪なバイオーム</span>
+    <div class="option-grid">
+      <div class="option-card recommend">
+        <h4>コラプション(汚染)</h4>
+        <p>紫色の荒廃した大地。序盤のボス「イーター・オブ・ワールド」は複数体に分裂するタイプで、じわじわ削る戦い方になります。</p>
+      </div>
+      <div class="option-card">
+        <h4>クリムゾン(緋色)</h4>
+        <p>赤黒い肉のような大地。序盤のボス「ブレイン・オブ・クトゥルフ」は取り巻きを処理しつつボス本体を狙う戦い方になります。序盤の雑魚がやや攻撃的です。</p>
+      </div>
+    </div>
+    <div class="my-pick mono">
+      MY PICK → 基本は<b>コラプション</b>で問題ありませんが、ワールド難易度をエキスパート以上にするなら<b>クリムゾン</b>の方が相性が良いこともあります。見た目の好み(紫か赤か)で選んでも全く問題ありません。
+    </div>
+  </div>
+</section>
+
+<section id="firststeps">
+  <div class="section-head">
+    <span class="no mono">03</span>
+    <h2>最初にやることリスト</h2>
+  </div>
+
+  <div class="my-pick mono" style="margin-bottom:24px;">
+    本当にスタートしたばかりの人は、いきなり本気のワールドで進めなくてOKです。まず試しにフィールドを1つ作って、操作を確認しながら適当に歩き回り、「どんな敵が出るか」「運が良ければ宝箱が見つかる」くらいの気持ちで探索してみるのもアリ。気に入らなければまた新しいフィールドを作り直して、遊びやすい進め方を探るところから始めましょう。
+  </div>
+
+  <div class="steps">
+    <div class="step">
+      <span class="step-num mono"></span>
+      <div>
+        <h4>木を切って初期装備を作る</h4>
+        <p>木材を集めて作業台を作り、木の剣・木の斧などをクラフト。まずは身の回りの素材集めからで問題ありません。</p>
+      </div>
+    </div>
+    <div class="step">
+      <span class="step-num mono"></span>
+      <div>
+        <h4>雨風をしのげる小屋を1つ作る</h4>
+        <p>壁・床・ドア・光源・椅子と机があればNPCが住める条件を満たします。凝った建築は不要で、四角い箱で十分です。</p>
+        <span class="tip mono">建築が苦手な人向け:とりあえず四角い部屋を1つ作れば機能面はOK</span>
+      </div>
+    </div>
+    <div class="step">
+      <span class="step-num mono"></span>
+      <div>
+        <h4>ガイドNPCに話しかける</h4>
+        <p>小屋の条件を満たすと最初のNPC「ガイド」が住み着きます。アイテムを見せるとクラフトのヒントをもらえるので、序盤は積極的に話しかけましょう。</p>
+      </div>
+    </div>
+    <div class="step">
+      <span class="step-num mono"></span>
+      <div>
+        <h4>地下に潜って鉱石を集める</h4>
+        <p>銅・鉄などの鉱石を掘って装備を強化。松明を持ち歩き、足元の落下・溶岩には注意しつつ進みます。</p>
+      </div>
+    </div>
+    <div class="step">
+      <span class="step-num mono"></span>
+      <div>
+        <h4>装備が整ったら最初のボスへ</h4>
+        <p>夜に自然発生する、または召喚アイテムで呼び出せる「アイズ・オブ・クトゥルフ」が最初の目安。ここを越えると一気にできることが増えます。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="firstgear">
+  <div class="section-head">
+    <span class="no mono">04</span>
+    <h2>最初のおすすめ装備</h2>
+  </div>
+
+  <div class="gear-highlight">
+    <span class="gear-tag mono">MY PICK</span>
+    <h3>サボテン装備(サボテン防具・サボテンの剣)</h3>
+    <ol>
+      <li>まずは<b>砂漠バイオーム</b>を見つける。</li>
+      <li>砂漠の敵は序盤にしては強めなので、極力戦わず無視して逃げてOK。</li>
+      <li>敵を無視しながら<b>サボテンを回収</b>する。</li>
+      <li>集めたサボテンで防具一式と剣をクラフトする。</li>
+    </ol>
+    <div class="why mono">
+      なぜおすすめか → 手に入れやすい割に性能が良く、これを装備するだけで序盤がかなり安定します。まだ鉱石装備が整っていない段階のつなぎとして特に優秀です。
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p class="colophon mono">
+    AKISHO GAMES — TERRARIA はじめの一歩ガイド<br>
+    設定はすべて個人の好みベースのおすすめです
+  </p>
+</footer>
+
+</body>
+</html>

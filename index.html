@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AKISHO GAMES — 飽き症でも遊べるゲーム便り</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@500;700;900&family=Noto+Sans+JP:wght@400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#E4E4DA;
+    --paper-2:#DAD9CD;
+    --ink:#1C1B19;
+    --pink:#FF3D82;
+    --teal:#007A8A;
+    --purple:#5B3E96;
+    --line: rgba(28,27,25,0.16);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--paper);
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(28,27,25,0.07) 1px, transparent 0);
+    background-size: 14px 14px;
+    color:var(--ink);
+    font-family:'Noto Sans JP', sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .mono{ font-family:'JetBrains Mono', monospace; }
+  .display{ font-family:'Zen Kaku Gothic New', sans-serif; font-weight:900; }
+
+  a{color:inherit;}
+  ::selection{ background:var(--pink); color:var(--paper); }
+  @media (prefers-reduced-motion: reduce){
+    *{ animation:none !important; transition:none !important; }
+  }
+
+  /* ---------- misprint text effect ---------- */
+  .misprint{
+    position:relative;
+    display:inline-block;
+    color:var(--ink);
+  }
+  .misprint::before,
+  .misprint::after{
+    content: attr(data-text);
+    position:absolute;
+    left:0; top:0;
+    width:100%;
+    mix-blend-mode:multiply;
+    z-index:-1;
+  }
+  .misprint::before{ color:var(--pink); transform:translate(3px,2px); }
+  .misprint::after{ color:var(--teal); transform:translate(-3px,-2px); }
+
+  /* ---------- top bar ---------- */
+  .topbar{
+    position:sticky; top:0; z-index:50;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:10px 24px;
+    background:var(--paper);
+    border-bottom:2px solid var(--ink);
+  }
+  .topbar .brand{ font-size:14px; letter-spacing:.08em; }
+  .topbar nav{ display:flex; gap:18px; font-size:12px; letter-spacing:.06em; }
+  .topbar nav a{ text-decoration:none; border-bottom:1px solid transparent; padding-bottom:2px; }
+  .topbar nav a:hover{ border-color:var(--ink); }
+  .topbar nav a:focus-visible, a:focus-visible, button:focus-visible{
+    outline:2px solid var(--purple); outline-offset:2px;
+  }
+
+  /* ---------- masthead ---------- */
+  .masthead{
+    padding:64px 24px 40px;
+    text-align:center;
+    position:relative;
+    overflow:hidden;
+  }
+  .issue-tag{
+    display:inline-block;
+    font-size:12px;
+    letter-spacing:.12em;
+    padding:4px 10px;
+    border:1px solid var(--ink);
+    margin-bottom:18px;
+    transform:rotate(-2deg);
+    background:var(--paper);
+  }
+  .masthead h1{
+    font-size:clamp(48px, 11vw, 108px);
+    line-height:.95;
+    margin:0;
+    letter-spacing:-.01em;
+  }
+  .masthead .sub-jp{
+    display:block;
+    font-family:'Zen Kaku Gothic New', sans-serif;
+    font-weight:700;
+    font-size:clamp(18px, 3vw, 28px);
+    margin-top:6px;
+  }
+  .tagline{
+    max-width:540px;
+    margin:22px auto 0;
+    font-size:14px;
+    line-height:1.9;
+    color:rgba(28,27,25,.78);
+  }
+  .washi{
+    position:absolute;
+    width:140px; height:34px;
+    background:repeating-linear-gradient(45deg, rgba(255,61,130,.35) 0 6px, rgba(0,122,138,.28) 6px 12px);
+    opacity:.55;
+  }
+  .washi.w1{ top:36px; left:-30px; transform:rotate(-14deg); }
+  .washi.w2{ bottom:12px; right:-24px; transform:rotate(10deg); }
+
+  /* ---------- section shell ---------- */
+  section{ padding:56px 24px; max-width:1100px; margin:0 auto; }
+  .section-head{
+    display:flex; align-items:baseline; gap:14px;
+    margin-bottom:28px;
+    border-bottom:2px solid var(--ink);
+    padding-bottom:10px;
+  }
+  .section-head .no{ font-size:12px; }
+  .section-head h2{
+    font-size:26px; margin:0;
+  }
+
+  /* ---------- feature card ---------- */
+  .feature{
+    display:grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap:36px;
+    align-items:center;
+    border:2px solid var(--ink);
+    background:var(--paper-2);
+    padding:28px;
+    position:relative;
+  }
+  .feature-cover{
+    aspect-ratio:4/3;
+    background:
+      radial-gradient(circle at 30% 30%, var(--pink) 0, transparent 55%),
+      radial-gradient(circle at 70% 65%, var(--teal) 0, transparent 55%),
+      var(--ink);
+    mix-blend-mode:normal;
+    position:relative;
+    overflow:hidden;
+  }
+  .feature-cover::after{
+    content:"";
+    position:absolute; inset:0;
+    background-image: radial-gradient(rgba(228,228,218,.9) 1px, transparent 1.4px);
+    background-size:6px 6px;
+    mix-blend-mode:screen;
+    opacity:.5;
+  }
+  .stamp{
+    position:absolute; top:16px; right:16px;
+    width:88px; height:88px;
+    border:2px dashed var(--pink);
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    text-align:center;
+    transform:rotate(-14deg);
+    font-size:11px;
+    letter-spacing:.05em;
+    color:var(--pink);
+    line-height:1.3;
+    background:rgba(228,228,218,.55);
+  }
+  .feature-body .eyebrow{ font-size:12px; letter-spacing:.1em; color:var(--purple); }
+  .feature-body h3{ font-size:30px; margin:10px 0 12px; }
+  .feature-body p{ font-size:14px; line-height:1.9; color:rgba(28,27,25,.85); }
+  .tag-row{ display:flex; flex-wrap:wrap; gap:8px; margin-top:16px; }
+  .tag{
+    font-size:11px; letter-spacing:.05em;
+    padding:4px 9px;
+    border:1px solid var(--ink);
+    background:var(--paper);
+  }
+
+  /* ---------- filter tabs ---------- */
+  .filters{
+    display:flex; flex-wrap:wrap; gap:8px;
+    margin-bottom:30px;
+  }
+  .filter-btn{
+    font-family:'JetBrains Mono', monospace;
+    font-size:12px;
+    padding:7px 14px;
+    border:1px solid var(--ink);
+    background:var(--paper);
+    cursor:pointer;
+    letter-spacing:.03em;
+  }
+  .filter-btn.active{
+    background:var(--ink);
+    color:var(--paper);
+  }
+
+  /* ---------- platform blocks ---------- */
+  .platform-block{ margin-top:44px; }
+  .platform-block:first-of-type{ margin-top:0; }
+  .platform-title{
+    display:inline-block;
+    font-size:13px;
+    letter-spacing:.08em;
+    padding:5px 12px;
+    background:var(--ink);
+    color:var(--paper);
+    margin-bottom:20px;
+    transform:rotate(-1deg);
+  }
+
+  /* ---------- grid ---------- */
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:22px;
+  }
+  .card{
+    border:2px solid var(--ink);
+    background:var(--paper-2);
+    padding:0;
+    position:relative;
+    transition: transform .18s ease;
+  }
+  .card:nth-child(3n+1){ transform:rotate(-.6deg); }
+  .card:nth-child(3n+2){ transform:rotate(.5deg); }
+  .card:nth-child(3n+3){ transform:rotate(-.3deg); }
+  .card:hover{ transform:rotate(0deg) translateY(-3px); }
+  .card.hidden{ display:none; }
+  .card-cover{
+    height:120px;
+    position:relative;
+    overflow:hidden;
+    border-bottom:2px solid var(--ink);
+  }
+  .card-cover::after{
+    content:"";
+    position:absolute; inset:0;
+    background-image: radial-gradient(rgba(228,228,218,.9) 1px, transparent 1.4px);
+    background-size:5px 5px;
+    mix-blend-mode:screen;
+    opacity:.45;
+  }
+  .card-body{ padding:16px 16px 18px; }
+  .card-genre{
+    display:inline-block;
+    font-size:10px; letter-spacing:.08em;
+    padding:3px 8px;
+    border:1px solid var(--ink);
+    margin-bottom:10px;
+    transform:rotate(-2deg);
+  }
+  .card h4{ font-size:18px; margin:0 0 8px; }
+  .card .hook{
+    font-size:12px; color:var(--purple);
+    margin:0 0 10px; letter-spacing:.02em;
+  }
+  .card p{ font-size:13px; line-height:1.8; margin:0; color:rgba(28,27,25,.82); }
+
+  /* ---------- footer ---------- */
+  footer{
+    border-top:2px solid var(--ink);
+    padding:34px 24px 44px;
+    text-align:center;
+  }
+  footer .colophon{ font-size:12px; letter-spacing:.05em; line-height:2; color:rgba(28,27,25,.75); }
+  footer .rule{
+    width:60px; height:2px; background:var(--ink);
+    margin:0 auto 16px;
+  }
+
+  @media (max-width:820px){
+    .feature{ grid-template-columns:1fr; }
+    .grid{ grid-template-columns:repeat(2,1fr); }
+    .topbar nav{ display:none; }
+  }
+  @media (max-width:520px){
+    .grid{ grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand mono">AKISHO GAMES <span style="opacity:.5">/ Vol.01</span></div>
+  <nav class="mono">
+    <a href="#feature">今月の一枚</a>
+    <a href="#games">紹介一覧</a>
+  </nav>
+</div>
+
+<header class="masthead">
+  <div class="washi w1"></div>
+  <div class="washi w2"></div>
+  <span class="issue-tag mono">FOR THE EASILY BORED</span>
+  <h1>
+    <span class="misprint display" data-text="AKISHO GAMES">AKISHO GAMES</span>
+    <span class="sub-jp">飽き症でも遊べるゲーム便り</span>
+  </h1>
+  <p class="tagline">「続けられない」は悪いことじゃない。<br>短時間で満足できて、途中で他のゲームに浮気してもいいものだけを、インディーからメジャータイトルまで集めました。</p>
+</header>
+
+<section id="feature">
+  <div class="section-head">
+    <span class="no mono">01</span>
+    <h2>今月の一枚</h2>
+  </div>
+  <div class="feature">
+    <div class="feature-cover">
+      <div class="stamp mono">今月の<br>イチオシ</div>
+    </div>
+    <div class="feature-body">
+      <div class="eyebrow mono">FEATURED / ACTION・サンドボックス</div>
+      <h3>Terraria（テラリア）</h3>
+      <p>地下を掘り進めて資源を集め、拠点を作り、モンスターと戦う2Dサンドボックスアクション。やることは山ほどあるのに強制されないので、自分のペースで目標を見つけながら長く遊べます。飽きたら掘るのをやめて建築に逃げる、みたいな自由さも魅力。</p>
+      <div class="tag-row">
+        <span class="tag mono">1人用/マルチ対応</span>
+        <span class="tag mono">やり込み要素多数</span>
+        <span class="tag mono">クラフト・探索</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="games">
+  <div class="section-head">
+    <span class="no mono">02</span>
+    <h2>紹介一覧</h2>
+  </div>
+
+  <div class="filters mono" role="group" aria-label="ジャンルで絞り込み">
+    <button class="filter-btn active" data-genre="all">すべて</button>
+    <button class="filter-btn" data-genre="rpg">RPG</button>
+    <button class="filter-btn" data-genre="action">アクション</button>
+    <button class="filter-btn" data-genre="puzzle">パズル</button>
+    <button class="filter-btn" data-genre="roguelike">ローグライク</button>
+    <button class="filter-btn" data-genre="horror">ホラー・ミステリー</button>
+    <button class="filter-btn" data-genre="sim">シミュレーション</button>
+  </div>
+
+  <div class="platform-block">
+    <h3 class="platform-title mono">PCゲー</h3>
+  <div class="grid platform-grid" data-platform="pc">
+
+    <article class="card" data-genre="action">
+      <div class="card-cover" style="background:radial-gradient(circle at 40% 35%, var(--teal), transparent 55%), radial-gradient(circle at 65% 65%, var(--pink), transparent 55%), var(--ink);"></div>
+      <div class="card-body">
+        <span class="card-genre mono">ACTION</span>
+        <h4>Terraria</h4>
+        <p class="hook">掘って作って戦う、終わりのない2Dサンドボックス</p>
+        <p>地下を掘り進めて資源を集め、拠点を作り、モンスターと戦う2Dアクション・サンドボックス。やることは山ほどあるのに強制されないので、自分のペースで目標を見つけながら長く遊べます。</p>
+      </div>
+    </article>
+
+
+
+<article class="card" data-genre="sim">
+      <div class="card-cover" style="background:radial-gradient(circle at 35% 30%, var(--pink), transparent 55%), radial-gradient(circle at 70% 70%, var(--teal), transparent 55%), var(--ink);"></div>
+      <div class="card-body">
+        <span class="card-genre mono">SIMULATION</span>
+        <h4>Stardew Valley</h4>
+        <p class="hook">農業・釣り・鉱山・恋愛、全部乗せの田舎暮らし</p>
+        <p>祖父の遺した農場を舞台にした生活シミュレーション。やることが多いのに急かされないので、自分のペースでのんびり遊べます。長く続けられる一本を探している人向け。</p>
+      </div>
+    </article>
+
+<article class="card" data-genre="roguelike">
+      <div class="card-cover" style="background:radial-gradient(circle at 40% 60%, var(--pink), transparent 55%), radial-gradient(circle at 65% 30%, var(--ink), transparent 55%), var(--purple);"></div>
+      <div class="card-body">
+        <span class="card-genre mono">ROGUELIKE</span>
+        <h4>Hades</h4>
+        <p class="hook">死んでも死んでも、また潜りたくなる地下ダンジョン</p>
+        <p>ギリシャ神話の冥府を舞台にしたアクション・ローグライク。死ぬたびに物語が進み、キャラクターとの会話も蓄積していくので、周回そのものが飽きにくい作りになっています。</p>
+      </div>
+    </article>
+
+<article class="card" data-genre="action">
+      <div class="card-cover" style="background:radial-gradient(circle at 50% 50%, var(--pink), transparent 60%), radial-gradient(circle at 20% 20%, var(--teal), transparent 55%), var(--ink);"></div>
+      <div class="card-body">
+        <span class="card-genre mono">ACTION</span>
+        <h4>Hollow Knight</h4>
+        <p class="hook">広大な地下王国を探索する、静かで硬派な2Dアクション</p>
+        <p>手描き風の美しいビジュアルと、じわじわと広がっていくマップ探索が魅力のメトロイドヴァニア。歯応えのあるボス戦も多く、じっくり腰を据えて遊びたい人向け。</p>
+      </div>
+    </article>
+
+<article class="card" data-genre="roguelike">
+      <div class="card-cover" style="background:radial-gradient(circle at 35% 60%, var(--purple), transparent 55%), radial-gradient(circle at 70% 30%, var(--teal), transparent 55%), var(--ink);"></div>
+      <div class="card-body">
+        <span class="card-genre mono">ROGUELIKE</span>
+        <h4>Slay the Spire</h4>
+        <p class="hook">カードゲーム×ローグライクというジャンルの原点的存在</p>
+        <p>塔を登りながらカードデッキを強化していくローグライク・デッキ構築の代表作。1戦ごとの判断がそのまま次の展開に響くので、常に頭を使いながら楽しめます。</p>
+      </div>
+    </article>
+
+<article class="card" data-genre="action">
+      <div class="card-cover" style="background:radial-gradient(circle at 40% 60%, var(--teal), transparent 55%), radial-gradient(circle at 70% 30%, var(--purple), transparent 55%), var(--ink);"></div>
+      <div class="card-body">
+        <span class="card-genre mono">ACTION</span>
+        <h4>Apex Legends</h4>
+        <p class="hook">1戦15〜20分、決着が早いバトルロイヤル</p>
+        <p>基本プレイ無料の3人チームバトルロイヤル。1試合の決着が比較的早く、負けてもすぐ次のマッチに切り替えられるので、長時間の縛りが苦手な人にも向いています。</p>
+      </div>
+    </article>
+
+  </div>
+  </div>
+
+  <div class="platform-block">
+    <h3 class="platform-title mono">任天堂ゲー（Switch）</h3>
+  <div class="grid platform-grid" data-platform="nintendo">
+
+    <article class="card" data-genre="action">
+      <div class="card-cover" style="background:radial-gradient(circle at 40% 35%, var(--teal), transparent 55%), radial-gradient(circle at 65% 65%, var(--pink), transparent 55%), var(--ink);"></div>
+      <div class="card-body">
+        <span class="card-genre mono">ACTION</span>
+        <h4>Terraria</h4>
+        <p class="hook">掘って作って戦う、終わりのない2Dサンドボックス</p>
+        <p>地下を掘り進めて資源を集め、拠点を作り、モンスターと戦う2Dアクション・サンドボックス。やることは山ほどあるのに強制されないので、自分のペースで目標を見つけながら長く遊べます。</p>
+      </div>
+    </article>
+
+
+
+<article class="card" data-genre="sim">
+      <div class="card-cover" style="background:radial-gradient(circle at 35% 30%, var(--pink), transparent 55%), radial-gradient(circle at 70% 70%, var(--teal), transparent 55%), var(--ink);"></div>
+      <div class="card-body">
+        <span class="card-genre mono">SIMULATION</span>
+        <h4>Stardew Valley</h4>
+        <p class="hook">農業・釣り・鉱山・恋愛、全部乗せの田舎暮らし</p>
+        <p>祖父の遺した農場を舞台にした生活シミュレーション。やることが多いのに急かされないので、自分のペースでのんびり遊べます。長く続けられる一本を探している人向け。</p>
+      </div>
+    </article>
+
+<article class="card" data-genre="roguelike">
+      <div class="card-cover" style="background:radial-gradient(circle at 40% 60%, var(--pink), transparent 55%), radial-gradient(circle at 65% 30%, var(--ink), transparent 55%), var(--purple);"></div>
+      <div class="card-body">
+        <span class="card-genre mono">ROGUELIKE</span>
+        <h4>Hades</h4>
+        <p class="hook">死んでも死んでも、また潜りたくなる地下ダンジョン</p>
+        <p>ギリシャ神話の冥府を舞台にしたアクション・ローグライク。死ぬたびに物語が進み、キャラクターとの会話も蓄積していくので、周回そのものが飽きにくい作りになっています。</p>
+      </div>
+    </article>
+
+<article class="card" data-genre="action">
+      <div class="card-cover" style="background:radial-gradient(circle at 50% 50%, var(--pink), transparent 60%), radial-gradient(circle at 20% 20%, var(--teal), transparent 55%), var(--ink);"></div>
+      <div class="card-body">
+        <span class="card-genre mono">ACTION</span>
+        <h4>Hollow Knight</h4>
+        <p class="hook">広大な地下王国を探索する、静かで硬派な2Dアクション</p>
+        <p>手描き風の美しいビジュアルと、じわじわと広がっていくマップ探索が魅力のメトロイドヴァニア。歯応えのあるボス戦も多く、じっくり腰を据えて遊びたい人向け。</p>
+      </div>
+    </article>
+
+<article class="card" data-genre="roguelike">
+      <div class="card-cover" style="background:radial-gradient(circle at 35% 60%, var(--purple), transparent 55%), radial-gradient(circle at 70% 30%, var(--teal), transparent 55%), var(--ink);"></div>
+      <div class="card-body">
+        <span class="card-genre mono">ROGUELIKE</span>
+        <h4>Slay the Spire</h4>
+        <p class="hook">カードゲーム×ローグライクというジャンルの原点的存在</p>
+        <p>塔を登りながらカードデッキを強化していくローグライク・デッキ構築の代表作。1戦ごとの判断がそのまま次の展開に響くので、常に頭を使いながら楽しめます。</p>
+      </div>
+    </article>
+
+<article class="card" data-genre="action">
+      <div class="card-cover" style="background:radial-gradient(circle at 45% 35%, var(--pink), transparent 55%), radial-gradient(circle at 65% 65%, var(--teal), transparent 55%), var(--ink);"></div>
+      <div class="card-body">
+        <span class="card-genre mono">ACTION</span>
+        <h4>スプラトゥーン3</h4>
+        <p class="hook">1試合3分、飽きる前に終わる陣取りバトル</p>
+        <p>インクを塗り合うチーム対戦アクション。1マッチが短く、負けてもすぐ次に挑戦できるテンポの良さが魅力。ソロでもフレンドとでも気軽に遊べます。</p>
+      </div>
+    </article>
+
+<article class="card" data-genre="action">
+      <div class="card-cover" style="background:radial-gradient(circle at 55% 45%, var(--purple), transparent 55%), radial-gradient(circle at 25% 65%, var(--pink), transparent 55%), var(--ink);"></div>
+      <div class="card-body">
+        <span class="card-genre mono">ACTION</span>
+        <h4>マリオカート8 デラックス</h4>
+        <p class="hook">1レース数分、みんなでワイワイできる定番レース</p>
+        <p>説明不要の王道レースゲーム。1回のプレイが短く、複雑な操作を覚えなくても楽しめるので、飽きたら誰かを誘ってすぐ気分転換できます。</p>
+      </div>
+    </article>
+
+  </div>
+  </div>
+
+  <div class="platform-block">
+    <h3 class="platform-title mono">PSゲー</h3>
+  <div class="grid platform-grid" data-platform="ps">
+
+    <article class="card" data-genre="action">
+      <div class="card-cover" style="background:radial-gradient(circle at 40% 35%, var(--teal), transparent 55%), radial-gradient(circle at 65% 65%, var(--pink), transparent 55%), var(--ink);"></div>
+      <div class="card-body">
+        <span class="card-genre mono">ACTION</span>
+        <h4>Terraria</h4>
+        <p class="hook">掘って作って戦う、終わりのない2Dサンドボックス</p>
+        <p>地下を掘り進めて資源を集め、拠点を作り、モンスターと戦う2Dアクション・サンドボックス。やることは山ほどあるのに強制されないので、自分のペースで目標を見つけながら長く遊べます。</p>
+      </div>
+    </article>
+
+
+
+<article class="card" data-genre="sim">
+      <div class="card-cover" style="background:radial-gradient(circle at 35% 30%, var(--pink), transparent 55%), radial-gradient(circle at 70% 70%, var(--teal), transparent 55%), var(--ink);"></div>
+      <div class="card-body">
+        <span class="card-genre mono">SIMULATION</span>
+        <h4>Stardew Valley</h4>
+        <p class="hook">農業・釣り・鉱山・恋愛、全部乗せの田舎暮らし</p>
+        <p>祖父の遺した農場を舞台にした生活シミュレーション。やることが多いのに急かされないので、自分のペースでのんびり遊べます。長く続けられる一本を探している人向け。</p>
+      </div>
+    </article>
+
+<article class="card" data-genre="roguelike">
+      <div class="card-cover" style="background:radial-gradient(circle at 40% 60%, var(--pink), transparent 55%), radial-gradient(circle at 65% 30%, var(--ink), transparent 55%), var(--purple);"></div>
+      <div class="card-body">
+        <span class="card-genre mono">ROGUELIKE</span>
+        <h4>Hades</h4>
+        <p class="hook">死んでも死んでも、また潜りたくなる地下ダンジョン</p>
+        <p>ギリシャ神話の冥府を舞台にしたアクション・ローグライク。死ぬたびに物語が進み、キャラクターとの会話も蓄積していくので、周回そのものが飽きにくい作りになっています。</p>
+      </div>
+    </article>
+
+<article class="card" data-genre="action">
+      <div class="card-cover" style="background:radial-gradient(circle at 50% 50%, var(--pink), transparent 60%), radial-gradient(circle at 20% 20%, var(--teal), transparent 55%), var(--ink);"></div>
+      <div class="card-body">
+        <span class="card-genre mono">ACTION</span>
+        <h4>Hollow Knight</h4>
+        <p class="hook">広大な地下王国を探索する、静かで硬派な2Dアクション</p>
+        <p>手描き風の美しいビジュアルと、じわじわと広がっていくマップ探索が魅力のメトロイドヴァニア。歯応えのあるボス戦も多く、じっくり腰を据えて遊びたい人向け。</p>
+      </div>
+    </article>
+
+<article class="card" data-genre="roguelike">
+      <div class="card-cover" style="background:radial-gradient(circle at 35% 60%, var(--purple), transparent 55%), radial-gradient(circle at 70% 30%, var(--teal), transparent 55%), var(--ink);"></div>
+      <div class="card-body">
+        <span class="card-genre mono">ROGUELIKE</span>
+        <h4>Slay the Spire</h4>
+        <p class="hook">カードゲーム×ローグライクというジャンルの原点的存在</p>
+        <p>塔を登りながらカードデッキを強化していくローグライク・デッキ構築の代表作。1戦ごとの判断がそのまま次の展開に響くので、常に頭を使いながら楽しめます。</p>
+      </div>
+    </article>
+
+<article class="card" data-genre="action">
+      <div class="card-cover" style="background:radial-gradient(circle at 40% 60%, var(--teal), transparent 55%), radial-gradient(circle at 70% 30%, var(--purple), transparent 55%), var(--ink);"></div>
+      <div class="card-body">
+        <span class="card-genre mono">ACTION</span>
+        <h4>Apex Legends</h4>
+        <p class="hook">1戦15〜20分、決着が早いバトルロイヤル</p>
+        <p>基本プレイ無料の3人チームバトルロイヤル。1試合の決着が比較的早く、負けてもすぐ次のマッチに切り替えられるので、長時間の縛りが苦手な人にも向いています。</p>
+      </div>
+    </article>
+
+  </div>
+  </div>
+
+</section>
+
+<footer>
+  <div class="rule"></div>
+  <p class="colophon mono">
+    AKISHO GAMES — 飽き症でも遊べるゲーム便り<br>
+    発行：AKISHO GAMES編集部　/　次号もお楽しみに<br>
+    ※各タイトルの購入・詳細情報は Steam や各ストアなどでご確認ください。
+  </p>
+</footer>
+
+<script>
+  const buttons = document.querySelectorAll('.filter-btn');
+  const cards = document.querySelectorAll('.platform-grid .card');
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      buttons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const g = btn.dataset.genre;
+      cards.forEach(card => {
+        if (g === 'all' || card.dataset.genre === g) {
+          card.classList.remove('hidden');
+        } else {
+          card.classList.add('hidden');
+        }
+      });
+    });
+  });
+</script>
+
+</body>
+</html>
